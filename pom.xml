@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>digipost-html-validator</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <description>Validering og sanitering av HTML som skal sendes til Digipost</description>
     <name>digipost-html-validator</name>
 
