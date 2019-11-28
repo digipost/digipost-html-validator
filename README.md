@@ -39,6 +39,21 @@ Hvis din html har feil i html vil funksjonen kaste `HTMLValidationException`. Og
 arver fra `ValidationException` som er en `RuntimeException` og har metoden `getValidationErrors` for å hente ut feilene i dokumentet.
 Se `DigipostValidatingHtmlSanitizerTest` for basic eksempel.  
 
+Det går også an bruke en instans av `HtmlValidator.java`:
+```java
+HtmlValidationResult validationResult = new HtmlValidator().valider("<html></html>".getBytes());
+
+if(validationResult.okForWeb){
+    //Cool! Det kan sendes inn
+} else {
+    System.err.println(validationResult.toString()); // vil skrive ut meldingene fra exception
+}
+
+if(validationResult.hasDiffAfterSanitizing){ // Din html er endret på og er fremdele ok å sende inn.
+    System.out.println(validationResult.toString()); // vil skrive ut den nye html-en som du så kan bruke til å endre din html.
+}
+```
+
 # Hvorfor vasker vi HTML-kode som blir sendt til Digipost
 Generelt endrer vi ikke på innhold som blir sendt gjennom Digipost. Men HTML-validering er vanskelig. Å sørge
 for at HTML er vasket er mye enklere (se [https://github.com/OWASP/java-html-sanitizer/blob/master/docs/html-validation.md](https://github.com/OWASP/java-html-sanitizer/blob/f1c32172208e29c970d2cdfdd6be48d6d44d3646/docs/html-validation.md).
