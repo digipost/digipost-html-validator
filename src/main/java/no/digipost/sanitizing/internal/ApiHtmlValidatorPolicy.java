@@ -163,7 +163,7 @@ final class ApiHtmlValidatorPolicy {
             "ul", "ol", "li", "dd", "dt", "dl", "tbody", "thead", "tfoot",
             "table", "td", "th", "tr", "colgroup", "fieldset", "legend",
             "figure", "figcaption", "header", "nav", "section", "aside",
-            "article", "footer", "hgroup"
+            "article", "footer", "hgroup", "main"
         )
 
 
