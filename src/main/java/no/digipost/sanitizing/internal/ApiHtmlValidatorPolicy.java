@@ -161,7 +161,10 @@ final class ApiHtmlValidatorPolicy {
             "cite", "samp", "sub", "sup", "strike", "center", "blockquote",
             "hr", "br", "col", "font", "map", "span", "div", "img",
             "ul", "ol", "li", "dd", "dt", "dl", "tbody", "thead", "tfoot",
-            "table", "td", "th", "tr", "colgroup", "fieldset", "legend")
+            "table", "td", "th", "tr", "colgroup", "fieldset", "legend",
+            "figure", "figcaption", "header", "nav", "section", "aside",
+            "article", "footer", "hgroup"
+        )
 
 
         // Spans without attributes are usually stripped (because they semantically are the same as just the span contents).
