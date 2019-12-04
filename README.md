@@ -1,5 +1,5 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/no.digipost/digipost-html-validator/badge.svg)](https://maven-badges.herokuapp.com/maven-central/no.digipost/digipost-html-validator)
-![](https://github.com/digipost/digipost-html-validator/workflows/Java%20CI/badge.svg)
+![](https://github.com/digipost/digipost-html-validator/workflows/Build%20snapshot/badge.svg)
 [![License](https://img.shields.io/badge/license-Apache%202-blue)](https://github.com/digipost/digipost-html-validator/blob/master/LICENCE)
 
 # digipost-html-validator
