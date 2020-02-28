@@ -15,18 +15,24 @@
  */
 package no.digipost.sanitizing;
 
+import no.digipost.sanitizing.internal.PolicyFactoryProvider;
 import org.junit.jupiter.api.Test;
+
+import java.time.Clock;
+import java.time.ZoneOffset;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class HtmlValidatorTest {
+class HtmlValidatorTestV2 {
+
+    private final HtmlValidator V2_validator = new HtmlValidator(Clock.fixed(PolicyFactoryProvider.V2_IN_EFFECT, ZoneOffset.UTC));
 
     @Test
     void enkle_tilfeller_skal_være_helt_ok() {
-        final HtmlValidationResult valider = new HtmlValidator().valider("<html></html>".getBytes());
+        final HtmlValidationResult valider = V2_validator.valider("<html></html>".getBytes());
 
         assertTrue(valider.okForWeb);
         assertSame(valider, HtmlValidationResult.HTML_EVERYTHING_OK);
@@ -34,7 +40,7 @@ class HtmlValidatorTest {
 
     @Test
     void ikke_avsluttet_tag_skal_avsluttes() {
-        final HtmlValidationResult valider = new HtmlValidator().valider("<html><body></html>".getBytes());
+        final HtmlValidationResult valider = V2_validator.valider("<html><body></html>".getBytes());
 
         assertTrue(valider.okForWeb);
         assertEquals(valider.toString(), "[ HtmlValidationResult OK for web\n" +
@@ -43,7 +49,7 @@ class HtmlValidatorTest {
 
     @Test
     void lenker_skal_få_rel_target() {
-        final HtmlValidationResult valider = new HtmlValidator().valider(("<!doctype html>\n" +
+        final HtmlValidationResult valider = V2_validator.valider(("<!doctype html>\n" +
             "<html lang=\"no\">\n" +
             "<head>\n" +
             "    <meta charset=\"utf-8\">\n" +
@@ -65,7 +71,7 @@ class HtmlValidatorTest {
 
     @Test
     void javascript_skal_kaste_exception() {
-        final HtmlValidationResult valider = new HtmlValidator().valider("<html><body><script/></body></html>".getBytes());
+        final HtmlValidationResult valider = V2_validator.valider("<html><body><script/></body></html>".getBytes());
 
         assertFalse(valider.okForWeb);
         assertEquals(valider.toString(), "[ HtmlValidationResult\n" +
@@ -74,7 +80,7 @@ class HtmlValidatorTest {
 
     @Test
     void gal_css_skal_kaste_exception() {
-        final HtmlValidationResult valider = new HtmlValidator().valider("<html><body><style>*   {color:red;}</style></body></html>".getBytes());
+        final HtmlValidationResult valider = V2_validator.valider("<html><body><style>*   {color:red;}</style></body></html>".getBytes());
 
         assertFalse(valider.okForWeb);
         assertEquals(valider.toString(), "[ HtmlValidationResult\n" +
@@ -83,10 +89,25 @@ class HtmlValidatorTest {
 
     @Test
     void ulovlig_css_skal_kaste_exception() {
-        final HtmlValidationResult valider = new HtmlValidator().valider("<html><body><style>.per{display:none;}</style></body></html>".getBytes());
+        final HtmlValidationResult valider = V2_validator.valider("<html><body><style>.per{display:none;}</style></body></html>".getBytes());
 
         assertFalse(valider.okForWeb);
         assertEquals(valider.toString(), "[ HtmlValidationResult\n" +
             "Value 'none' is not allowed for property 'display'.]");
+    }
+
+    @Test
+    void style_paa_attribute_tilfeller_skal_være_helt_ok() {
+        final HtmlValidationResult valider = V2_validator.valider("<html><body><p style=\"margin-right:1em\">Hallo</p></body></html>".getBytes());
+
+        assertTrue(valider.okForWeb);
+        assertSame(valider, HtmlValidationResult.HTML_EVERYTHING_OK);
+    }
+
+    @Test
+    void feil_om_css_i_style_attribute_ikke_er_whitelisted() {
+        final HtmlValidationResult valider = V2_validator.valider("<html><body><p style=\"display:none\">Hallo</p></body></html>".getBytes());
+
+        assertFalse(valider.okForWeb);
     }
 }

@@ -25,7 +25,7 @@ public class DigipostValidatingHtmlSanitizer {
 
     public static void main(String[] args) {
         final String sanitize = new DigipostValidatingHtmlSanitizer()
-            .sanitize(args[0], PolicyFactoryProvider.API_HTML);
+            .sanitize(args[0], PolicyFactoryProvider.getPolicyFactory());
 
         System.out.println(sanitize);
     }

@@ -17,9 +17,29 @@ package no.digipost.sanitizing.internal;
 
 import org.owasp.html.PolicyFactory;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+
 final public class PolicyFactoryProvider {
 
-    public static final PolicyFactory API_HTML = ApiHtmlValidatorPolicy.ALLOW_STYLE_ELEMENT_POLICY;
+    public static final Instant V2_IN_EFFECT = ZonedDateTime.of(2019, 6,4,7,10,0,0, ZoneOffset.UTC).toInstant();
+
+    /**
+     *
+     * @return the current PolicyFactory used by digipost
+     */
+    public static PolicyFactory getPolicyFactory(){
+        return getPolicyFactory(Instant.now());
+    }
+
+    public static PolicyFactory getPolicyFactory(Instant documentCreationDate){
+        if(documentCreationDate.isBefore(V2_IN_EFFECT)) {
+            return ApiHtmlValidatorPolicy.V1_VALIDATE_ONLY_HTML_POLICY;
+        }else {
+            return ApiHtmlValidatorPolicy.V2_VALIDATE_HTML_AND_CSS_POLICY;
+        }
+    }
 
     public static ErrorCollectingHtmlChangeListener errorCollector() {
         return new ErrorCollectingHtmlChangeListener();

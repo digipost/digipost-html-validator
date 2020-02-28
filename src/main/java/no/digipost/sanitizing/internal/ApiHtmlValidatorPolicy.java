@@ -59,6 +59,11 @@ import static no.digipost.sanitizing.internal.ValidatorPatterns.VALIGN;
  * but that's where it's from anyway.
  * <p>
  * It's made to allow everything that was allowed in our old AnitSamy policy, except the bypass flaws, obviously.
+ *
+ * <p>
+ * Ooo, how to test these policies efficiently? No problem, head over to HtmlSanitizerBrowserTestBed and you're good to go.
+ * If you are able to trigger a JavaScript alert box in the HTML popup you've won!
+ *
  */
 final class ApiHtmlValidatorPolicy {
     private static final Set<String> CSS_WHITELIST;
@@ -90,11 +95,8 @@ final class ApiHtmlValidatorPolicy {
         CSS_PROPERTY_WHITELIST = Collections.unmodifiableMap(propertyValueWhitelist);
     }
 
-    /**
-     * Ooo, how to test this efficiently? No problem, head over to HtmlSanitizerBrowserTestBed and you're good to go.
-     * If you are able to trigger a JavaScript alert box in the HTML popup you've won!
-     */
-    public static final PolicyFactory ALLOW_STYLE_ELEMENT_POLICY = new HtmlPolicyBuilder()
+    // Version 1 of policy. We used this policy before we introduced CSS-validation/-sanitation
+    static final PolicyFactory V1_VALIDATE_ONLY_HTML_POLICY = new HtmlPolicyBuilder()
         .allowStyling(CssSchema.withProperties(CSS_WHITELIST))
         .allowUrlsInStyles(AttributePolicy.IDENTITY_ATTRIBUTE_POLICY)
         .allowStandardUrlProtocols().allowUrlProtocols("data")
@@ -170,9 +172,15 @@ final class ApiHtmlValidatorPolicy {
         // Spans without attributes are usually stripped (because they semantically are the same as just the span contents).
         // Stripping of elements look like validation errors to us, so we'll rather keep them - even when they're empty.
         .allowWithoutAttributes("span")
-        .allowTextIn("style")
-        .withPreprocessor(new StyleElementPreprocessor())
         .toFactory();
+
+
+    static final PolicyFactory V2_VALIDATE_HTML_AND_CSS_POLICY = V1_VALIDATE_ONLY_HTML_POLICY.and(new HtmlPolicyBuilder()
+            .allowTextIn("style")
+            .withPreprocessor(new StyleElementPreprocessor())
+            .toFactory());
+
+
 
     private static AttributePolicy value(final String mustHaveValue) {
         return (elementName, attributeName, value) -> {
