@@ -30,7 +30,7 @@ public class HtmlSanitizerBrowserTestBed {
     public static void main(String[] args) throws Exception {
         String html = IOUtils.toString(HtmlSanitizerBrowserTestBed.class.getResourceAsStream("testInput.html"), UTF_8);
 
-        String sanitizedHtml = validatingHtmlSanitizer.sanitize(html, ApiHtmlValidatorPolicy.ALLOW_STYLE_ELEMENT_POLICY);
+        String sanitizedHtml = validatingHtmlSanitizer.sanitize(html, ApiHtmlValidatorPolicy.V2_VALIDATE_HTML_AND_CSS_POLICY);
 
         File htmlFile = File.createTempFile("sanitizer-test", "html");
         IOUtils.write(sanitizedHtml, new FileOutputStream(htmlFile), UTF_8);

@@ -65,7 +65,7 @@ public class RichHtmlValidatorTest {
 
     @Test
     public void should_preserve_doctype_html() {
-        String validatedHtml = validator.sanitize("<!DOCTYPE html><div><p>Content</p></div>", ApiHtmlValidatorPolicy.ALLOW_STYLE_ELEMENT_POLICY);
+        String validatedHtml = validator.sanitize("<!DOCTYPE html><div><p>Content</p></div>", PolicyFactoryProvider.getPolicyFactory());
         assertEquals("<!doctype html><div><p>Content</p></div>", validatedHtml);
     }
 
@@ -161,7 +161,7 @@ public class RichHtmlValidatorTest {
     @Test
     public void skal_ikke_tillate_base_href() {
         try {
-            validator.sanitize("<html><head><base target=\"_blank\" href=\"http://www.evil.com/\"/></head><body>asdf</body></html>", ApiHtmlValidatorPolicy.ALLOW_STYLE_ELEMENT_POLICY);
+            validator.sanitize("<html><head><base target=\"_blank\" href=\"http://www.evil.com/\"/></head><body>asdf</body></html>", ApiHtmlValidatorPolicy.V2_VALIDATE_HTML_AND_CSS_POLICY);
             fail("Should fail");
         } catch (ValidationException dae) {
             assertEquals("Found HTML policy violation: Tag name: base, attribute(s): href", dae.getValidationErrors().get(0));
@@ -171,9 +171,9 @@ public class RichHtmlValidatorTest {
 
     @Test
     public void skal_tillate_et_begrenset_sett_metaattributter() {
-        validator.sanitize("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">", ApiHtmlValidatorPolicy.ALLOW_STYLE_ELEMENT_POLICY);
-        validator.sanitize("<meta http-equiv=\"content-type\" content=\"text/html;charset=UTF-8\">", ApiHtmlValidatorPolicy.ALLOW_STYLE_ELEMENT_POLICY);
-        validator.sanitize("<meta name=\"viewport\" content=\"user-scalable = yes\">", ApiHtmlValidatorPolicy.ALLOW_STYLE_ELEMENT_POLICY);
+        validator.sanitize("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">", ApiHtmlValidatorPolicy.V2_VALIDATE_HTML_AND_CSS_POLICY);
+        validator.sanitize("<meta http-equiv=\"content-type\" content=\"text/html;charset=UTF-8\">", ApiHtmlValidatorPolicy.V2_VALIDATE_HTML_AND_CSS_POLICY);
+        validator.sanitize("<meta name=\"viewport\" content=\"user-scalable = yes\">", ApiHtmlValidatorPolicy.V2_VALIDATE_HTML_AND_CSS_POLICY);
     }
 
     @Test
@@ -184,24 +184,24 @@ public class RichHtmlValidatorTest {
 
     @Test
     public void skal_tillate_maillenker_uten_target_blank() {
-        validator.sanitize("<a href=\"mailto:hei@example.org\">Klikk for mail</a>", ApiHtmlValidatorPolicy.ALLOW_STYLE_ELEMENT_POLICY);
+        validator.sanitize("<a href=\"mailto:hei@example.org\">Klikk for mail</a>", ApiHtmlValidatorPolicy.V2_VALIDATE_HTML_AND_CSS_POLICY);
     }
 
     @Test
     public void skal_bruke_target_blank_på_lenker_ved_andre_targets() {
-        String validatedHtml = validator.sanitize("<a href=\"http://example.org\" target=\"_self\">Clicky clicky</a>", ApiHtmlValidatorPolicy.ALLOW_STYLE_ELEMENT_POLICY);
+        String validatedHtml = validator.sanitize("<a href=\"http://example.org\" target=\"_self\">Clicky clicky</a>", ApiHtmlValidatorPolicy.V2_VALIDATE_HTML_AND_CSS_POLICY);
         assertEquals("<a href=\"http://example.org\" target=\"_blank\" rel=\"nofollow noreferrer noopener\">Clicky clicky</a>", validatedHtml);
     }
 
     @Test
     public void skal_legge_på_target_blank_ved_manglende_target() {
-        String validatedHtml = validator.sanitize("<a href=\"http://example.org\">Clicky clicky</a>", ApiHtmlValidatorPolicy.ALLOW_STYLE_ELEMENT_POLICY);
+        String validatedHtml = validator.sanitize("<a href=\"http://example.org\">Clicky clicky</a>", ApiHtmlValidatorPolicy.V2_VALIDATE_HTML_AND_CSS_POLICY);
         assertEquals("<a href=\"http://example.org\" target=\"_blank\" rel=\"nofollow noreferrer noopener\">Clicky clicky</a>", validatedHtml);
     }
 
     private void assertValid(String html) {
         try {
-            validator.sanitize(html, ApiHtmlValidatorPolicy.ALLOW_STYLE_ELEMENT_POLICY);
+            validator.sanitize(html, ApiHtmlValidatorPolicy.V2_VALIDATE_HTML_AND_CSS_POLICY);
         } catch (ValidationException dae) {
             if (!dae.getValidationErrors().isEmpty()) {
                 fail("Should be valid html, but failed due to " + dae.getMessage());
@@ -212,7 +212,7 @@ public class RichHtmlValidatorTest {
 
     private void assertInvalid(String html) {
         try {
-            validator.sanitize(html, ApiHtmlValidatorPolicy.ALLOW_STYLE_ELEMENT_POLICY);
+            validator.sanitize(html, ApiHtmlValidatorPolicy.V2_VALIDATE_HTML_AND_CSS_POLICY);
             fail("Should fail");
         } catch (ValidationException dae) {
             if (dae.getValidationErrors().isEmpty()) {
