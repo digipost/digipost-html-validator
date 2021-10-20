@@ -17,7 +17,7 @@ package no.digipost.sanitizing.exception;
 
 import java.util.List;
 
-final public class CSSValidationException extends ValidationException {
+public final class CSSValidationException extends ValidationException {
 
 	public CSSValidationException(List<String> validationErrors) {
 		super(validationErrors);

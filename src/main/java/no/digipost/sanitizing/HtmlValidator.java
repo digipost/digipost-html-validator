@@ -25,8 +25,8 @@ import static no.digipost.sanitizing.HtmlValidationResult.HTML_EVERYTHING_OK;
 
 public class HtmlValidator {
 
-    private DigipostValidatingHtmlSanitizer digipostValidatingHtmlSanitizer;
-    private Clock clock;
+    private final DigipostValidatingHtmlSanitizer digipostValidatingHtmlSanitizer;
+    private final Clock clock;
 
     public HtmlValidator() {
         this(Clock.systemDefaultZone());

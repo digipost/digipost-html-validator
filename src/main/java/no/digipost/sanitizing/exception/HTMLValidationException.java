@@ -15,8 +15,6 @@
  */
 package no.digipost.sanitizing.exception;
 
-import no.digipost.sanitizing.exception.ValidationException;
-
 import java.util.List;
 
 public class HTMLValidationException extends ValidationException {

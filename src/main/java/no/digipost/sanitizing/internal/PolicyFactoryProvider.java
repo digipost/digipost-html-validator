@@ -21,7 +21,9 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
-final public class PolicyFactoryProvider {
+public final class PolicyFactoryProvider {
+
+    private PolicyFactoryProvider() {}
 
     public static final Instant V2_IN_EFFECT = ZonedDateTime.of(2019, 6,4,7,10,0,0, ZoneOffset.UTC).toInstant();
 
