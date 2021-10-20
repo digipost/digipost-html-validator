@@ -80,6 +80,19 @@ class DigipostValidatingHtmlSanitizerTest {
         assertThat(thrown.getValidationErrors().get(0), equalTo("CSS in style-element is invalid."));
     }
 
+    @Test
+    void should_fail_script_inside_style_element() {
+        // Test for CVE_2021_42575
+        CSSValidationException thrown =
+            assertThrows(CSSValidationException.class,
+                () -> DigipostValidatingHtmlSanitizer.main(new String[]{
+                    "<select><option><style><script>alert(1)</script></style></option></select>"
+                }),
+                "Expected main() to throw, but it didn't");
+
+        assertThat(thrown.getValidationErrors().get(0), equalTo("CSS in style-element is invalid."));
+    }
+
     @AfterEach
     void tearDown() {
         System.setOut(old);
