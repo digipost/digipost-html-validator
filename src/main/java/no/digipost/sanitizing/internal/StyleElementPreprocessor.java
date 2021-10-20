@@ -60,12 +60,14 @@ final class StyleElementPreprocessor implements HtmlStreamEventProcessor {
         private static final String STYLE_TAG = "style";
 
         private static final Set<String> WORDS_IN_VALUE_BLACKLIST = new HashSet<>(Arrays.asList("javascript", "expression", "url(", "http://", "https://", "/*", "*/"));
-        private static final Map<String, String> HTML_ESCAPE_CHARS = new HashMap<String, String>() {{
-            put("&", "&amp;");
-            put("<", "&lt;");
-            put(">", "&gt;");
-            put("/", "&#x2F;");
-        }};
+        private static final Map<String, String> HTML_ESCAPE_CHARS = new HashMap<>();
+
+        static{
+            HTML_ESCAPE_CHARS.put("&", "&amp;");
+            HTML_ESCAPE_CHARS.put("<", "&lt;");
+            HTML_ESCAPE_CHARS.put(">", "&gt;");
+            HTML_ESCAPE_CHARS.put("/", "&#x2F;");
+        };
 
         // check that css is valid format. No dangling selectors (i.e. text) : (?:([\.\#\-\w\s\: \[\],]+)\s*\{([^}]+)\}\s*)+
         private static final Pattern completeCssPattern = Pattern.compile("(?:([\\.\\#\\-\\w\\s\\: \\[\\],]+)\\s*\\{([^}]+)\\}\\s*)+");
