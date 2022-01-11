@@ -199,6 +199,12 @@ public class RichHtmlValidatorTest {
         assertEquals("<a href=\"http://example.org\" target=\"_blank\" rel=\"nofollow noreferrer noopener\">Clicky clicky</a>", validatedHtml);
     }
 
+    // https://nvd.nist.gov/vuln/detail/CVE-2021-42575
+    @Test
+    public void skal_feile_CVE_2021_42575() {
+        assertInvalid("<select><option><style><script>alert(1)</script></style></option></select>\n");
+    }
+
     private void assertValid(String html) {
         try {
             validator.sanitize(html, ApiHtmlValidatorPolicy.V2_VALIDATE_HTML_AND_CSS_POLICY);
