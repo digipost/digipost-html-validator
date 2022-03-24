@@ -16,13 +16,12 @@
 package no.digipost.sanitizing;
 
 import no.digipost.sanitizing.internal.PolicyFactoryProvider;
+
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
-import java.time.Instant;
 import java.time.ZoneOffset;
 
-import static no.digipost.sanitizing.internal.PolicyFactoryProvider.V2_IN_EFFECT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -42,7 +41,7 @@ class HtmlValidatorTestV1 {
 
     @Test
     void ikke_avsluttet_tag_skal_avsluttes() {
-        final HtmlValidationResult valider = V1_validator.valider("<html><body></html>".getBytes());
+        final HtmlValidationResult valider = V1_validator.valider("<html><body></html>".getBytes(), true);
 
         assertTrue(valider.okForWeb);
         assertEquals(valider.toString(), "[ HtmlValidationResult OK for web\n" +
@@ -75,7 +74,7 @@ class HtmlValidatorTestV1 {
             "<body id=\"Digipost\">\n" +
             "<h1>Digipost</h1>\n" +
             "</body>\n" +
-            "</html>\n").getBytes());
+            "</html>\n").getBytes(), true);
 
         assertTrue(valider.okForWeb);
         assertEquals(valider.toString(), "[ HtmlValidationResult OK for web\n" +
@@ -94,7 +93,7 @@ class HtmlValidatorTestV1 {
         assertEquals(valider.toString(), "[ HtmlValidationResult\n" +
             "Found HTML policy violation. Tag name: script]");
     }
-    
+
     @Test
     void css_i_style_skal_fjernes() {
         final String html = "<html><body><style>.per{display:none;}</style></body></html>";

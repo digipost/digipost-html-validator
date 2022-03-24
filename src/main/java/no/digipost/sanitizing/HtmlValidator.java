@@ -37,14 +37,40 @@ public class HtmlValidator {
         this.digipostValidatingHtmlSanitizer = new DigipostValidatingHtmlSanitizer();
     }
 
+    /**
+     * Validate html and check sanitation differences.
+     *
+     * Same as <code>valider(content, false</code>.
+     *
+     * @param content HTML content to validate.
+     * @return result of validation.
+     */
     public HtmlValidationResult valider(byte[] content) {
+        return valider(content, false);
+    }
+
+    /**
+     *
+     * Validate HTML and check whether sanitations would produce differences.
+     *
+     * @param content Html contents to validate
+     * @param includeSanitizedOnDifference whether the entire sanitized html
+     *        should be included in the validation result. It can be viewed as
+     *        part of {@link HtmlValidationResult#toString}, but should normally
+     *        be skipped, due to size or sensitive data exposure risk.
+     *
+     * @return result of validation.
+     */
+    public HtmlValidationResult valider(byte[] content, boolean includeSanitizedOnDifference) {
         try {
             final String input = new String(content, StandardCharsets.UTF_8);
             final String output = this.digipostValidatingHtmlSanitizer.sanitize(input, PolicyFactoryProvider.getPolicyFactory(clock.instant()));
             if (input.equals(output)) {
                 return HTML_EVERYTHING_OK;
             } else {
-                return new HtmlValidationResult(output);
+                return new HtmlValidationResult(includeSanitizedOnDifference ? output:
+                    "Sanitized html result not shown. Specify the "
+                    + "includeSanitizedOnDifference parameter as true, if you need that.");
             }
         } catch (ValidationException e) {
             return new HtmlValidationResult(e);

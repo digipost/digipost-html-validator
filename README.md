@@ -50,9 +50,15 @@ if(validationResult.okForWeb){
 }
 
 if(validationResult.hasDiffAfterSanitizing){ // Din html er endret på og er fremdele ok å sende inn.
-    System.out.println(validationResult.toString()); // vil skrive ut den nye html-en som du så kan bruke til å endre din html.
+    System.out.println(validationResult.toString()); // vil skrive ut valideringsresultat. Inkluderer ikke sanitert html.
 }
 ```
+
+Dersom du trenger å se på sanitert innhold gjennom `HtmlValidator`, kall den 
+overlastede varianten av `HtmlValidator.validate`, med to parametre, og angi 
+argumentet `includeSanitizedOnDifference` som `true`. Da vil vasket html inkluderes i 
+toString-dumpen over. *Merk* Vær forsiktig med å dumpe html i produksjon, dersom
+den inneholder sensitive data.
 
 # Hvorfor vasker vi HTML-kode som blir sendt til Digipost
 Generelt endrer vi ikke på innhold som blir sendt gjennom Digipost. Men HTML-validering er vanskelig. Å sørge

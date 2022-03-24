@@ -16,6 +16,7 @@
 package no.digipost.sanitizing;
 
 import no.digipost.sanitizing.internal.PolicyFactoryProvider;
+
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
@@ -40,7 +41,7 @@ class HtmlValidatorTestV2 {
 
     @Test
     void ikke_avsluttet_tag_skal_avsluttes() {
-        final HtmlValidationResult valider = V2_validator.valider("<html><body></html>".getBytes());
+        final HtmlValidationResult valider = V2_validator.valider("<html><body></html>".getBytes(), true);
 
         assertTrue(valider.okForWeb);
         assertEquals(valider.toString(), "[ HtmlValidationResult OK for web\n" +
@@ -58,7 +59,7 @@ class HtmlValidatorTestV2 {
             "<body id=\"Digipost\">\n" +
             "<h1>Digipost</h1>\n" +
             "</body>\n" +
-            "</html>\n").getBytes());
+            "</html>\n").getBytes(), true);
 
         assertTrue(valider.okForWeb);
         assertEquals(valider.toString(), "[ HtmlValidationResult OK for web\n" +
