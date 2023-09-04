@@ -19,7 +19,7 @@ This project includes:
   Guava InternalFutureFailureAccess and InternalFutures under The Apache Software License, Version 2.0
   Guava ListenableFuture only under The Apache Software License, Version 2.0
   Guava: Google Core Libraries for Java under Apache License, Version 2.0
-  J2ObjC Annotations under The Apache Software License, Version 2.0
+  J2ObjC Annotations under Apache License, Version 2.0
   OWASP Java HTML Sanitizer under Apache License, Version 2.0
   SLF4J API Module under MIT License
 
