@@ -15,7 +15,6 @@
  */
 package no.digipost.sanitizing.internal;
 
-import com.google.common.collect.Lists;
 import org.owasp.html.AttributePolicy;
 import org.owasp.html.CssSchema;
 import org.owasp.html.ElementPolicy;
@@ -72,16 +71,14 @@ final class ApiHtmlValidatorPolicy {
 
     static {
         HashSet<String> defaultProperties = new HashSet<>(CssSchema.DEFAULT.allowedProperties());
-        defaultProperties.addAll(Lists.newArrayList(
-            "top"
-            , "bottom"
-            , "left"
-            , "right"
-            , "background"
-            , "page-break-before"
-            , "page-break-after"
-            , "page-break-inside"
-        ));
+        defaultProperties.add("top");
+        defaultProperties.add("bottom");
+        defaultProperties.add("left");
+        defaultProperties.add("right");
+        defaultProperties.add("background");
+        defaultProperties.add("page-break-before");
+        defaultProperties.add("page-break-after");
+        defaultProperties.add("page-break-inside");
         CSS_WHITELIST = Collections.unmodifiableSet(defaultProperties);
 
         final Predicate<String> allowAllValuesPredicate = (value) -> true;
