@@ -38,12 +38,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!-- Override Guava version of owasp-java-html-sanitizer to fix vulnerability -->
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>32.1.2-jre</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -61,17 +55,17 @@
         <dependency>
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
             <artifactId>owasp-java-html-sanitizer</artifactId>
-            <version>20211018.2</version>
+            <version>20240325.1</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.32</version>
+            <version>1.7.36</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.11.0</version>
+            <version>2.16.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
