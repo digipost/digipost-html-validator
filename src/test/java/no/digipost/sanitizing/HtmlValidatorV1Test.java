@@ -26,13 +26,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class HtmlValidatorTestV2 {
+class HtmlValidatorV1Test {
 
-    private final HtmlValidator V2_validator = new HtmlValidator(Clock.fixed(PolicyFactoryProvider.V2_IN_EFFECT, ZoneOffset.UTC));
+    private final HtmlValidator V1_validator = new HtmlValidator(Clock.fixed(PolicyFactoryProvider.V2_IN_EFFECT.minusSeconds(1), ZoneOffset.UTC));
 
     @Test
     void enkle_tilfeller_skal_være_helt_ok() {
-        final HtmlValidationResult valider = V2_validator.valider("<html></html>".getBytes());
+        final HtmlValidationResult valider = V1_validator.valider("<html></html>".getBytes());
 
         assertTrue(valider.okForWeb);
         assertSame(valider, HtmlValidationResult.HTML_EVERYTHING_OK);
@@ -40,7 +40,7 @@ class HtmlValidatorTestV2 {
 
     @Test
     void ikke_avsluttet_tag_skal_avsluttes() {
-        final HtmlValidationResult valider = V2_validator.valider("<html><body></html>".getBytes());
+        final HtmlValidationResult valider = V1_validator.valider("<html><body></html>".getBytes());
 
         assertTrue(valider.okForWeb);
         assertEquals(valider.toString(), "[ HtmlValidationResult OK for web\n" +
@@ -48,8 +48,23 @@ class HtmlValidatorTestV2 {
     }
 
     @Test
+    void style_paa_attribute_tilfeller_skal_være_helt_ok() {
+        final HtmlValidationResult valider = V1_validator.valider("<html><body><p style=\"margin-right:1em\">Hallo</p></body></html>".getBytes());
+
+        assertTrue(valider.okForWeb);
+        assertSame(valider, HtmlValidationResult.HTML_EVERYTHING_OK);
+    }
+
+    @Test
+    void feil_om_css_i_style_attribute_ikke_er_whitelisted() {
+        final HtmlValidationResult valider = V1_validator.valider("<html><body><p style=\"display:none\">Hallo</p></body></html>".getBytes());
+
+        assertFalse(valider.okForWeb);
+    }
+
+    @Test
     void lenker_skal_få_rel_target() {
-        final HtmlValidationResult valider = V2_validator.valider(("<!doctype html>\n" +
+        final HtmlValidationResult valider = V1_validator.valider(("<!doctype html>\n" +
             "<html lang=\"no\">\n" +
             "<head>\n" +
             "    <meta charset=\"utf-8\">\n" +
@@ -71,43 +86,19 @@ class HtmlValidatorTestV2 {
 
     @Test
     void javascript_skal_kaste_exception() {
-        final HtmlValidationResult valider = V2_validator.valider("<html><body><script/></body></html>".getBytes());
+        final HtmlValidationResult valider = V1_validator.valider("<html><body><script/></body></html>".getBytes());
 
         assertFalse(valider.okForWeb);
         assertEquals(valider.toString(), "[ HtmlValidationResult\n" +
             "Found HTML policy violation. Tag name: script]");
     }
-
+    
     @Test
-    void gal_css_skal_kaste_exception() {
-        final HtmlValidationResult valider = V2_validator.valider("<html><body><style>*   {color:red;}</style></body></html>".getBytes());
-
-        assertFalse(valider.okForWeb);
-        assertEquals(valider.toString(), "[ HtmlValidationResult\n" +
-            "CSS in style-element is invalid., CSS selector not found. Indicates illegal css.]");
-    }
-
-    @Test
-    void ulovlig_css_skal_kaste_exception() {
-        final HtmlValidationResult valider = V2_validator.valider("<html><body><style>.per{display:none;}</style></body></html>".getBytes());
-
-        assertFalse(valider.okForWeb);
-        assertEquals(valider.toString(), "[ HtmlValidationResult\n" +
-            "Value 'none' is not allowed for property 'display'.]");
-    }
-
-    @Test
-    void style_paa_attribute_tilfeller_skal_være_helt_ok() {
-        final HtmlValidationResult valider = V2_validator.valider("<html><body><p style=\"margin-right:1em\">Hallo</p></body></html>".getBytes());
+    void css_i_style_skal_fjernes() {
+        final String html = "<html><body><style>.per{display:none;}</style></body></html>";
+        final HtmlValidationResult valider = V1_validator.valider(html.getBytes());
 
         assertTrue(valider.okForWeb);
-        assertSame(valider, HtmlValidationResult.HTML_EVERYTHING_OK);
-    }
-
-    @Test
-    void feil_om_css_i_style_attribute_ikke_er_whitelisted() {
-        final HtmlValidationResult valider = V2_validator.valider("<html><body><p style=\"display:none\">Hallo</p></body></html>".getBytes());
-
-        assertFalse(valider.okForWeb);
+        assertTrue(valider.hasDiffAfterSanitizing);
     }
 }
