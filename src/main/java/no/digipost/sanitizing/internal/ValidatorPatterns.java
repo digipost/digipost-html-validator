@@ -25,7 +25,8 @@ final class ValidatorPatterns {
 	// HTML/CSS Spec allows 3 or 6 digit hex to specify color
 	static final Pattern COLOR_CODE = Pattern.compile("(?:#(?:[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?))");
 
-	static final Pattern NUMBER_OR_PERCENT = Pattern.compile("[0-9]+%?");
+    static final Pattern NUMBER_OR_PERCENT = Pattern.compile("[0-9]+%?");
+	static final Pattern DIMENSION = Pattern.compile("^[0-9]+(%|px|em|rem)?$");
 	static final Pattern PARAGRAPH = Pattern.compile("(?:[\\p{L}\\p{N},'.\\s\\-_()]|&[0-9]{2};)*");
 	static final Pattern HTML_ID = Pattern.compile("[a-zA-Z0-9:\\-_.]+");
 
@@ -41,6 +42,8 @@ final class ValidatorPatterns {
 	static final Pattern NAME = Pattern.compile("[a-zA-Z0-9\\-_$]+");
 
 	static final Pattern ALIGN = Pattern.compile("(?i)center|left|right|justify|char");
+
+    static final Pattern FLEX_BASIS = Pattern.compile("^(?:0|auto|content|\\d*\\.?\\d+(?:%|px|em|rem|))$");
 
 	static final Pattern VALIGN = Pattern.compile("(?i)baseline|bottom|middle|top");
 
