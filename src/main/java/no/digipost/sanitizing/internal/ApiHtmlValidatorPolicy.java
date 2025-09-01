@@ -34,6 +34,8 @@ import java.util.stream.Collectors;
 import static no.digipost.sanitizing.internal.ValidatorPatterns.ALIGN;
 import static no.digipost.sanitizing.internal.ValidatorPatterns.COLOR_NAME_OR_COLOR_CODE;
 import static no.digipost.sanitizing.internal.ValidatorPatterns.CSS_TYPE;
+import static no.digipost.sanitizing.internal.ValidatorPatterns.DIMENSION;
+import static no.digipost.sanitizing.internal.ValidatorPatterns.FLEX_BASIS;
 import static no.digipost.sanitizing.internal.ValidatorPatterns.HTML_CLASS;
 import static no.digipost.sanitizing.internal.ValidatorPatterns.HTML_ID;
 import static no.digipost.sanitizing.internal.ValidatorPatterns.HTML_TITLE;
@@ -83,13 +85,31 @@ final class ApiHtmlValidatorPolicy {
 
         final Predicate<String> allowAllValuesPredicate = (value) -> true;
         final Map<String, Predicate<String>> propertyValueWhitelist = CSS_WHITELIST.stream().collect(Collectors.toMap(prop -> prop, prop -> allowAllValuesPredicate));
-        //We need `clear`, `display` and `float` since diakonhjemme uses it (see skal_godta_diakonhjemmet_html()),
         propertyValueWhitelist.put("clear", allowAllValuesPredicate);
         propertyValueWhitelist.put("float", allowAllValuesPredicate);
-        propertyValueWhitelist.put("display", value -> value.equals("block") || value.equals("inline-block") || value.equals("inline"));
+        propertyValueWhitelist.put("display", value -> value.equals("block") || value.equals("inline-block") || value.equals("inline") || value.equals("flex"));
         propertyValueWhitelist.put("content", allowAllValuesPredicate);
+        propertyValueWhitelist.put("flex-direction", value -> value.equals("row") || value.equals("column") || value.equals("row-reverse") || value.equals("column-reverse"));
+        propertyValueWhitelist.put("flex-wrap", value -> value.equals("nowrap") || value.equals("wrap") || value.equals("wrap-reverse"));
+        propertyValueWhitelist.put("justify-content", value -> value.equals("flex-start") || value.equals("flex-end") || value.equals("center") || value.equals("space-between") || value.equals("space-around") || value.equals("space-evenly"));
+        propertyValueWhitelist.put("align-items", value -> value.equals("flex-start") || value.equals("flex-end") || value.equals("center") || value.equals("baseline") || value.equals("stretch"));
+        propertyValueWhitelist.put("align-self", value -> value.equals("auto") || value.equals("flex-start") || value.equals("flex-end") || value.equals("center") || value.equals("baseline") || value.equals("stretch"));
+        propertyValueWhitelist.put("gap", value -> DIMENSION.matcher(value).matches());
+        propertyValueWhitelist.put("flex", ApiHtmlValidatorPolicy::validateFlexProperty);
 
         CSS_PROPERTY_WHITELIST = Collections.unmodifiableMap(propertyValueWhitelist);
+    }
+
+    private static boolean validateFlexProperty(String value) {
+        String[] values = value.split("\\s+");
+        if (values.length < 1 || values.length > 3) {
+            return false;
+        }
+        boolean hasValidFlexGrowValue = NUMBER.matcher(values[0]).matches();
+        boolean hasValidFlexShrinkValue = values.length < 2 || NUMBER.matcher(values[1]).matches();
+        boolean hasValidFlexBasisValue = values.length < 3 || FLEX_BASIS.matcher(values[2]).matches();
+
+        return hasValidFlexGrowValue && hasValidFlexShrinkValue && hasValidFlexBasisValue;
     }
 
     // Version 1 of policy. We used this policy before we introduced CSS-validation/-sanitation
