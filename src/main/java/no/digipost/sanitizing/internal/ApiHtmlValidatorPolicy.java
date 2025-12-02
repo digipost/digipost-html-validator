@@ -175,7 +175,7 @@ final class ApiHtmlValidatorPolicy {
         .allowElements(KITH_TAGS)
         .allowElements(
             "html", "body", "head", "title", "meta", "base", "style",
-            "a", "label", "noscript", "h1", "h2", "h3", "h4", "h5", "h6",
+            "a", "label", "h1", "h2", "h3", "h4", "h5", "h6",
             "p", "i", "b", "u", "strong", "em", "small", "big", "pre", "code",
             "cite", "samp", "sub", "sup", "strike", "center", "blockquote",
             "hr", "br", "col", "font", "map", "span", "div", "img",
