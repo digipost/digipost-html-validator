@@ -76,8 +76,8 @@ final class StyleElementPreprocessor implements HtmlStreamEventProcessor {
         // Selector to group 1, all of its content to group 2. Regex without java escaping: ([\.\#\-\w\s\: \[\],]+)\s*\{([^}]+)\}\s*
         private static final Pattern selectorAndContentPattern = Pattern.compile("([\\.\\#\\-\\w\\s\\: \\[\\],]+)\\s*\\{([^}]+)\\}\\s*");
 
-        // Property to group 1, values to group 2. Regex without java escaping: \s*([\w- ]*)\:([\w\d\. \,\%\#\-\:\"\'\(\)\!\\\/\<]*)\;
-        private static final Pattern propertyValuePattern = Pattern.compile("\\s*([\\w- ]*)\\:([\\w\\d\\. \\,\\%\\#\\-\\:\\\"\\'\\(\\)\\!\\\\\\/\\<]*)\\;");
+        // Property to group 1, values to group 2. Regex without java escaping: \s*([\w- ]*)\:([\w\d\. \,\%\#\-\:\"\'\(\)\!\\\/\<]*)(?:\;|$)
+        private static final Pattern propertyValuePattern = Pattern.compile("\\s*([\\w- ]*)\\:([\\w\\d\\. \\,\\%\\#\\-\\:\\\"\\'\\(\\)\\!\\\\\\/\\<]*)(?:\\;|$)");
 
         private static final Logger log = LoggerFactory.getLogger(no.digipost.sanitizing.internal.StyleElementPreprocessor.StyleElementReceiver.class);
 
@@ -171,18 +171,13 @@ final class StyleElementPreprocessor implements HtmlStreamEventProcessor {
                 }
             }
 
-            // Tekst etter siste match er ikke validert (typisk en siste deklarasjon uten ';'), og må derfor avvises
+            // find() hopper over tekst som ikke matcher, så alt som er igjen etter siste match er uvalidert
             if (!matcherDidNotFindDeclaration && endOfPreviousDeclaration < stripedContent.length()) {
-                validationErrors.add("Declaration must end with ';'.");
+                validationErrors.add("Malformed declaration: " + stripedContent.substring(endOfPreviousDeclaration) + " .");
             }
 
             if (matcherDidNotFindDeclaration && stripedContent.length() > 0) {
-                if (!stripedContent.endsWith(";")) {
-                    validationErrors.add("Declaration must end with ';'.");
-                } else {
-                    log.warn("Found no match in property and value regex, even though it should. Something might be wrong with the regex. Content: {}", stripedContent);
-                    validationErrors.add("Malformed declaration: " + stripedContent + " .");
-                }
+                validationErrors.add("Malformed declaration: " + stripedContent + " .");
             }
         }
 

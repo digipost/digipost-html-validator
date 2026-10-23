@@ -300,22 +300,25 @@ public class StyleElementPreprocessorTest {
 	}
 
 	@Test
-	public void fail_if_value_does_not_end_with_semicolon(){
+	public void should_pass_if_last_declaration_does_not_end_with_semicolon(){
 		String styleContent = ".myClass table td {" +
-			"font-size:40px" +
+			"color:red;font-size:40px" +
 			"}";
 
-		try {
-			validateAndSanitizeCss(styleContent);
-			fail();
-		} catch (CSSValidationException exp) {
-			assertThat(exp.getValidationErrors(), where(List::size, is(1)));
-			assertThat(exp.getValidationErrors().get(0), containsString("must end with ';'."));
-		}
+		String result = validateAndSanitizeCss(styleContent);
+		assertThat(result, is(styleContent));
 	}
 
 	@Test
-	public void fail_if_last_declaration_does_not_end_with_semicolon_even_if_previous_ones_do(){
+	public void should_pass_if_single_declaration_does_not_end_with_semicolon(){
+		String styleContent = "p{color:red}";
+
+		String result = validateAndSanitizeCss(styleContent);
+		assertThat(result, is(styleContent));
+	}
+
+	@Test
+	public void should_validate_last_declaration_even_if_it_does_not_end_with_semicolon(){
 		String styleContent = "p{color:red;display:none}";
 
 		try {
@@ -323,7 +326,20 @@ public class StyleElementPreprocessorTest {
 			fail();
 		} catch (CSSValidationException exp) {
 			assertThat(exp.getValidationErrors(), where(List::size, is(1)));
-			assertThat(exp.getValidationErrors().get(0), containsString("must end with ';'."));
+			assertThat(exp.getValidationErrors().get(0), containsString("Value 'none' is not allowed for property 'display'."));
+		}
+	}
+
+	@Test
+	public void fail_if_last_declaration_without_semicolon_is_malformed(){
+		String styleContent = "p{color:red;font-family:\"\u00c5pen Sans\"}";
+
+		try {
+			validateAndSanitizeCss(styleContent);
+			fail();
+		} catch (CSSValidationException exp) {
+			assertThat(exp.getValidationErrors(), where(List::size, is(1)));
+			assertThat(exp.getValidationErrors().get(0), containsString("Malformed declaration"));
 		}
 	}
 
