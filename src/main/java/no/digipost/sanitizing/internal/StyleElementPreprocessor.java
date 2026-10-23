@@ -76,8 +76,8 @@ final class StyleElementPreprocessor implements HtmlStreamEventProcessor {
         // Selector to group 1, all of its content to group 2. Regex without java escaping: ([\.\#\-\w\s\: \[\],]+)\s*\{([^}]+)\}\s*
         private static final Pattern selectorAndContentPattern = Pattern.compile("([\\.\\#\\-\\w\\s\\: \\[\\],]+)\\s*\\{([^}]+)\\}\\s*");
 
-        // Property to group 1, values to group 2. Regex without java escaping: \s*([\w- ]*)\:([\w\d\. \,\%\#\-\:\"\'\(\)\!\\]*)\;
-        private static final Pattern propertyValuePattern = Pattern.compile("\\s*([\\w- ]*)\\:([\\w\\d\\. \\,\\%\\#\\-\\:\\\"\\'\\(\\)\\!\\\\]*)\\;");
+        // Property to group 1, values to group 2. Regex without java escaping: \s*([\w- ]*)\:([\w\d\. \,\%\#\-\:\"\'\(\)\!\\\/\<]*)\;
+        private static final Pattern propertyValuePattern = Pattern.compile("\\s*([\\w- ]*)\\:([\\w\\d\\. \\,\\%\\#\\-\\:\\\"\\'\\(\\)\\!\\\\\\/\\<]*)\\;");
 
         private static final Logger log = LoggerFactory.getLogger(no.digipost.sanitizing.internal.StyleElementPreprocessor.StyleElementReceiver.class);
 
@@ -146,9 +146,14 @@ final class StyleElementPreprocessor implements HtmlStreamEventProcessor {
 
             //The alternative to this boolean is to make a new pattern that matches the whole selectorContent (concluded that it was more error prone)
             boolean matcherDidNotFindDeclaration = true;
+            int endOfPreviousDeclaration = 0;
 
             while (declaration.find()) {
                 matcherDidNotFindDeclaration = false;
+                if (declaration.start() != endOfPreviousDeclaration) {
+                    validationErrors.add("Malformed declaration: " + stripedContent.substring(endOfPreviousDeclaration, declaration.start()) + " .");
+                }
+                endOfPreviousDeclaration = declaration.end();
                 final String property = declaration.group(1).trim();
                 final String value = declaration.group(2).trim();
                 log.debug("Processing declaration:  {}: {}", property, value);
@@ -164,6 +169,11 @@ final class StyleElementPreprocessor implements HtmlStreamEventProcessor {
                     log.debug("Property '{}' is not allowed in style-element", property);
                     validationErrors.add("Property '" + property + "' is not allowed.");
                 }
+            }
+
+            // Tekst etter siste match er ikke validert (typisk en siste deklarasjon uten ';'), og må derfor avvises
+            if (!matcherDidNotFindDeclaration && endOfPreviousDeclaration < stripedContent.length()) {
+                validationErrors.add("Declaration must end with ';'.");
             }
 
             if (matcherDidNotFindDeclaration && stripedContent.length() > 0) {

@@ -73,7 +73,7 @@ public class StyleElementPreprocessorTest {
 			validateAndSanitizeCss(styleContent);
             fail();
 		} catch (CSSValidationException exp) {
-			assertThat(exp.getValidationErrors(), where(List::size, is(1)));
+			assertThat(exp.getValidationErrors(), where(List::size, is(2)));
 		}
 	}
 
@@ -304,6 +304,19 @@ public class StyleElementPreprocessorTest {
 		String styleContent = ".myClass table td {" +
 			"font-size:40px" +
 			"}";
+
+		try {
+			validateAndSanitizeCss(styleContent);
+			fail();
+		} catch (CSSValidationException exp) {
+			assertThat(exp.getValidationErrors(), where(List::size, is(1)));
+			assertThat(exp.getValidationErrors().get(0), containsString("must end with ';'."));
+		}
+	}
+
+	@Test
+	public void fail_if_last_declaration_does_not_end_with_semicolon_even_if_previous_ones_do(){
+		String styleContent = "p{color:red;display:none}";
 
 		try {
 			validateAndSanitizeCss(styleContent);
